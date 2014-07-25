@@ -1,0 +1,70 @@
+<script type="text/hoplon">
+(page "index.html")
+
+(def mapvi                      (comp vec map-indexed))
+(defc contacts      nil)
+(defc contact       nil)
+(defc route         "home")
+(defc= contact-list   (mapvi #(list %1 %2) (take 20 contacts) ))
+(defn contacts-success [list]
+  (reset! contacts (js->clj list)))
+
+(defn contact-success [c]
+  (reset! contact (js->clj c))
+  (reset! route   "contact"))
+
+(defn get-contacts []
+  (.info (.-logging (.-forge js/window)) (str "getting all contacts" ))
+  (.selectAll (.-contact (.-forge js/window)) contacts-success))
+
+(defn get-contact []
+  (.info (.-logging (.-forge js/window)) (str "getting a contact" ))
+  (.select (.-contact (.-forge js/window)) contact-success))
+
+(defn get-contact-by-id [id]
+ (.info (.-logging (.-forge js/window)) (str "The id is " id ))
+  (.selectById (.-contact (.-forge js/window)) id contact-success)
+  
+  )
+
+(defn init-fn []
+  (get-contacts))
+
+(add-initfn! init-fn)
+(cell= (.info (.-logging (.-forge js/window)) (clj->js contacts)))
+</script>
+<html lang="en">
+  <head>
+    <title>Contact Test</title>
+  </head>
+  <body>
+    <div do-toggle='{{ (cell= (= route "home")) }}'>
+      <br>
+      <button on-click='{{ #(get-contact) }}'>Select a Contact</button>
+      <br>
+      <button on-click='{{ #(reset! route "list") }}'>See some Contacts</button>
+    </div>
+    <div do-toggle='{{ (cell= (= route "list")) }}'>
+      <button on-click='{{ #(reset! route "home") }}'>Back</button>
+      <ul>
+      <loop-tpl bindings='{{ [[i {:strs [id displayName] :as thing}] contact-list] }}'>
+        <li>
+          <span do-text='{{ (cell= (str  id " " displayName)) }}'></span>
+          <button on-click='{{ #(get-contact-by-id @id) }}'>details</button>
+        </li>
+      </loop-tpl>
+      </ul>
+    </div>
+    <div do-toggle='{{ (cell= (= route "contact")) }}'>
+      <button on-click='{{ #(reset! route "home") }}'>Back</button>
+      <br>
+      <label>contact-id</label><input type="text" readonly="true" do-value='{{ (cell= (get contact "id")) }}'>
+      <br>
+      <label>display-name</label><input type="text" readonly="true" do-value='{{ (cell= (get contact "displayName")) }}'>
+      <br>
+      <label>first-phone</label><input type="text" readonly="true" do-value='{{ (cell= (get-in contact ["phoneNumbers" 0 "value"]))}}'>
+      <br>
+      <label>first-email</label><input type="text" readonly="true" do-value='{{ (cell= (get-in contact ["emails" 0 "value"]))}}'>
+    </div>
+  </body>
+</html>

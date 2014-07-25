@@ -1,0 +1,6 @@
+*.swp
+.*
+development/
+release/
+resources/
+local_config.json
