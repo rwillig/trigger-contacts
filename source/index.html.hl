@@ -14,16 +14,16 @@
   (reset! route   "contact"))
 
 (defn get-contacts []
-  (.info (.-logging (.-forge js/window)) (str "getting all contacts" ))
-  (.selectAll (.-contact (.-forge js/window)) contacts-success))
+  (.info (.. js/window -forge -logging)(str "getting all contacts" ))
+  (.selectAll (.. js/window -forge -contact) contacts-success))
 
 (defn get-contact []
-  (.info (.-logging (.-forge js/window)) (str "getting a contact" ))
-  (.select (.-contact (.-forge js/window)) contact-success))
+  (.info (.. js/window -forge -logging) (str "getting a contact" ))
+  (.select (.. js/window -forge -contact) contact-success))
 
 (defn get-contact-by-id [id]
- (.info (.-logging (.-forge js/window)) (str "The id is " id ))
-  (.selectById (.-contact (.-forge js/window)) id contact-success)
+  (.info (.. js/window -forge -logging)(str "The id is " id ))
+  (.selectById (.. js/window -forge -contact) id contact-success)
   
   )
 
